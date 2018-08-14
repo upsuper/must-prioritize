@@ -75,7 +75,7 @@ async function loadProducts() {
       selected: shouldSelect,
     }));
   }
-  product.addEventListener("change", () => {
+  $product.addEventListener("change", () => {
     gLastProduct = $product.value;
     browser.storage.sync.set({lastProduct: gLastProduct});
     updateComponents(false);

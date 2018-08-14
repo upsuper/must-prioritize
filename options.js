@@ -10,9 +10,15 @@ function $c(tag, props) {
 let gData = new Map;
 let gSelected;
 let gLastProduct;
+let gOtherOptions;
 let $product = $("#product");
 let $component = $("#component");
 let $selected = $("#selected");
+let $otherOptions = $("#otherOptions");
+
+const OTHER_OPTIONS = {
+  "mustPrioritizeSelfAssignedBug": "Must prioritize a self-assigned bug."
+};
 
 async function loadProductInfo() {
   let params = new URLSearchParams;
@@ -75,12 +81,17 @@ async function loadProducts() {
       selected: shouldSelect,
     }));
   }
-  product.addEventListener("change", () => {
+  $product.addEventListener("change", () => {
     gLastProduct = $product.value;
     browser.storage.sync.set({lastProduct: gLastProduct});
     updateComponents(false);
   });
   updateComponents(false);
+}
+
+function updateOtherOptions() {
+  for (const option of Object.keys(OTHER_OPTIONS))
+    document.getElementById(option).checked = !!gOtherOptions[option];
 }
 
 function updateSelectedList() {
@@ -101,19 +112,45 @@ function updateSelectedList() {
   }
 }
 
-async function loadSelected() {
+function createOptions() {
+  for (const option of Object.keys(OTHER_OPTIONS)) {
+    let input = document.createElement('input');
+    input.id = option;
+    input.type = "checkbox";
+    input.addEventListener('change', function(e) {
+      gOtherOptions[this.id] = this.checked;
+      browser.storage.sync.set({otherOptions: gOtherOptions});
+    });
+
+    let label = document.createElement('label');
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(OTHER_OPTIONS[option]));
+    $otherOptions.appendChild(label);
+  }
+}
+
+async function loadConfig() {
   let saved = await browser.storage.sync.get({
     selected: {},
     lastProduct: "Core",
+    otherOptions: {},
   });
   gSelected = saved.selected;
+  gOtherOptions = saved.otherOptions;
   gLastProduct = saved.lastProduct;
   updateSelectedList();
+  updateOtherOptions();
   browser.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName == "sync" && changes.selected) {
-      gSelected = changes.selected.newValue;
-      updateSelectedList();
-      updateComponents(true);
+    if (areaName == "sync") {
+      if (changes.selected) {
+        gSelected = changes.selected.newValue;
+        updateSelectedList();
+        updateComponents(true);
+      }
+      if (changes.otherOptions) {
+        gOtherOptions = changes.otherOptions.newValue;
+        updateOtherOptions();
+      }
     }
   });
 }
@@ -167,7 +204,8 @@ $("#remove").addEventListener("click", () => {
 });
 
 async function load() {
-  await loadSelected();
+  createOptions();
+  await loadConfig();
   await loadProducts();
 }
 load();

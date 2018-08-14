@@ -1,0 +1,41 @@
+{
+    "manifest_version": 2,
+    "name": "Must Prioritize",
+    "version": "1.1",
+
+    "description": "Require selecting priority when filing bug to given components.",
+
+    "icons": {
+        "96": "icon-96.png"
+    },
+
+    "applications": {
+        "gecko": {
+            "id": "must-prioritize@upsuper.org",
+            "strict_min_version": "60.0"
+        }
+    },
+
+    "permissions": [
+        "storage"
+    ],
+
+    "content_scripts": [
+        {
+            "matches": [
+                "https://bugzilla.mozilla.org/enter_bug.cgi?*",
+                "https://bugzilla-dev.allizom.org/enter_bug.cgi?*"
+            ],
+            "js": ["must-prioritize.js"]
+        }
+    ],
+
+    "options_ui": {
+        "page": "options.html",
+        "browser_style": true
+    },
+
+    "background": {
+        "scripts": ["background.js"]
+    }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<style>
+  #outer {
+    width: 100%;
+    display: grid;
+    grid:
+      "product    actions selected" auto
+      "component  actions selected" 1fr
+      / 1fr 8em 1fr;
+    column-gap: 10px;
+  }
+  #product {
+    grid-area: product;
+  }
+  #component {
+    grid-area: component;
+  }
+  #actions {
+    grid-area: actions;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 10px;
+  }
+  #actions button {
+    margin: 5px 0;
+  }
+  #selected {
+    grid-area: selected;
+  }
+  select, button {
+    width: 100%;
+  }
+  button {
+    text-align: center;
+  }
+</style>
+<script src="options.js" defer></script>
+<div id="outer">
+  <select id="product"></select>
+  <select multiple id="component"></select>
+  <div id="actions">
+    <button id="add">Add &gt;&gt;</button>
+    <button id="remove">&lt;&lt; Remove</button>
+  </div>
+  <select multiple id="selected" size="20"></select>
+</div>
